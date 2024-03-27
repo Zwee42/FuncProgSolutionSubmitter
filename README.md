@@ -4,6 +4,7 @@
 - Axios
 - FormData
 - fs
+- zip-local
 
 # Usage (write in cmd)
 Node send.js %problemname%
