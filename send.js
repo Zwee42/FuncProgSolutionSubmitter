@@ -42,7 +42,7 @@ formData.append('submit', 'Submit');
 
 const headers = {
   'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
-  'Host': 'host',
+  'Host': host,
   'Cache-Control': 'max-age=0',
 };
 
