@@ -4,10 +4,9 @@ const fs = require('fs');
 const zipper = require('zip-local');
 
 const host ='cscx.org';
-const submitURL = 'https://cscx.org/submit';
 
 //Enter login
-const userName = 'usr' 
+const userName = 'user' 
 const pwd = "pass"
 
 if (process.argv.length < 2) {
@@ -17,17 +16,25 @@ if (process.argv.length < 2) {
 
 const problem = process.argv[2];
 var fileName = ""; 
+var extension = "";
+
+const allowedExtensions = ["c", "hs"]; 
 
 if(fs.existsSync(problem+"/")){
   zipper.sync.zip("./"+problem+"/").compress().save(problem+".zip");
   fileName = problem+".zip";
   console.log("Submitted a zip!")
 }
-else if(fs.existsSync(problem+".c")){
-  fileName = problem+".c";
-  console.log("Submitted a C source file!")
-}else{
 
+for(var i = 0; i < allowedExtensions.length; i++){
+  if(fs.existsSync(problem+"."+allowedExtensions[i])){
+    fileName = problem+"."+allowedExtensions[i];
+    extension = allowedExtensions[i];
+    console.log("Found a "+allowedExtensions[i]+" source file!")
+  }
+}
+
+if(fileName == ""){
   console.log("Failed to find file to submit");
   return;
 }
@@ -37,7 +44,7 @@ formData.append('user', userName);
 formData.append('password', pwd);
 formData.append('program', fs.createReadStream(fileName));
 formData.append('problem', problem);
-formData.append('language', 'c');
+formData.append('language', extension);
 formData.append('submit', 'Submit');
 
 const headers = {
@@ -46,7 +53,7 @@ const headers = {
   'Cache-Control': 'max-age=0',
 };
 
-
+const url = `https://${host}/submit`;
 axios.post(url, formData, { headers })
   .then(response => {
     if(response.data.includes('Submission successful')){
@@ -61,4 +68,3 @@ axios.post(url, formData, { headers })
     console.error('Error:', error);
 
 });
-
